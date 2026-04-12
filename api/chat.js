@@ -104,6 +104,6 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ reply });
   } catch (error) {
     console.error('Handler error:', error.message);
-    return res.status(500).json({ error: 'Internal server error. Please try again.' });
+    return res.status(500).json({ error: error.message || 'Internal server error.' });
   }
 };
