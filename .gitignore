@@ -1,0 +1,13 @@
+# Claude Code settings
+.claude/
+
+# Reference images (design inspiration only, not part of the site)
+refernces/
+
+# Old duplicate version
+Portfolio/index.html
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
