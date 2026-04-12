@@ -281,7 +281,60 @@
       .about-stats { grid-template-columns: 1fr 1fr; }
       .hero-label { font-size: .65rem; }
       .back-top { bottom: 1.25rem; right: 1.25rem; }
+      .chatbot-widget { bottom: 1.25rem; left: 1.25rem; }
+      .chatbot-window { width: calc(100vw - 2.5rem); height: 400px; }
     }
+
+    /* ── AI CHATBOT ── */
+    .chatbot-widget { position: fixed; bottom: 2rem; left: 2rem; z-index: 400; display: flex; flex-direction: column; align-items: flex-start; }
+    .chatbot-button { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 40px rgba(124,111,255,.4); border: none; transition: transform .3s; position: relative; }
+    .chatbot-button:hover { transform: scale(1.05); }
+    .chatbot-button svg { color: #fff; width: 28px; height: 28px; }
+    .chatbot-badge { position: absolute; top: -5px; right: -5px; background: var(--accent3); color: #fff; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--bg); pointer-events: none; }
+    .chatbot-window { width: 340px; height: 480px; background: rgba(13,13,24,0.95); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; position: absolute; bottom: 75px; left: 0; transform-origin: bottom left; transform: scale(0); opacity: 0; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s; box-shadow: 0 20px 80px rgba(0,0,0,0.5); }
+    .chatbot-window.open { transform: scale(1); opacity: 1; pointer-events: all; }
+    .chatbot-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); background: rgba(5,5,13,0.8); display: flex; align-items: center; justify-content: space-between; }
+    .chatbot-h-info { display: flex; align-items: center; gap: 0.75rem; }
+    .chatbot-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent3)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px;}
+    .chatbot-title { font-size: 0.9rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .chatbot-status { font-size: 0.7rem; color: #25d366; display: flex; align-items: center; gap: 4px; }
+    .chatbot-status::before { content: ''; display: block; width: 6px; height: 6px; background: #25d366; border-radius: 50%; box-shadow: 0 0 5px #25d366; animation: pulse-green 2s infinite; }
+    @keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .chatbot-close { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; transition: background 0.2s; }
+    .chatbot-close:hover { background: var(--border); color: var(--text); }
+    .chatbot-messages { flex: 1; padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; scroll-behavior: smooth; }
+    .msg { max-width: 85%; font-size: 0.85rem; line-height: 1.5; padding: 0.8rem 1rem; border-radius: 12px; position: relative; }
+    .msg-bot { background: var(--bg2); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--text); align-self: flex-start; }
+    .msg-user { background: linear-gradient(135deg, var(--accent), #9c7fff); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .chatbot-input-area { padding: 1rem; border-top: 1px solid var(--border); background: rgba(5,5,13,0.9); display: flex; gap: 0.5rem; }
+    .chatbot-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1rem; color: var(--text); font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
+    .chatbot-input:focus { border-color: var(--accent); }
+    .chatbot-send { background: var(--accent); color: #fff; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+    .chatbot-send:hover { background: var(--accent2); }
+    .msg-typing { display: flex; gap: 4px; padding: 12px 16px; width: fit-content; align-items: center; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; border-bottom-left-radius: 4px; margin-bottom: 0px; align-self: flex-start;}
+    .dot-typing { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; opacity: 0.6; animation: jump 1.4s infinite cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .dot-typing:nth-child(2) { animation-delay: 0.2s; }
+    .dot-typing:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes jump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    /* ── ROI CALCULATOR ── */
+    .roi-container { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 3rem; align-items: center; position: relative; overflow: hidden; }
+    .roi-container::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 100% 50%, rgba(124,111,255,.05), transparent 60%); pointer-events: none; }
+    .roi-inputs { display: flex; flex-direction: column; gap: 2rem; position: relative; z-index: 1; }
+    .roi-group { display: flex; flex-direction: column; gap: 0.75rem; }
+    .roi-group label { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .roi-group input[type="range"] { -webkit-appearance: none; width: 100%; background: var(--bg3); height: 8px; border-radius: 4px; outline: none; border: 1px solid var(--border); }
+    .roi-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 10px rgba(124,111,255,.5); transition: transform 0.2s; }
+    .roi-group input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    .roi-val { font-size: 0.85rem; color: var(--accent2); font-weight: 700; text-align: right; }
+    .roi-results { display: flex; flex-direction: column; gap: 1.5rem; position: relative; z-index: 1; }
+    .roi-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; }
+    .roi-card.highlight { border-color: rgba(124,111,255,.4); background: rgba(124,111,255,.04); position: relative; }
+    .roi-card.highlight::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent3)); }
+    .roi-card h4 { font-size: 1rem; color: var(--muted); margin-bottom: 0.5rem; font-weight: 500; }
+    .roi-price { font-size: 3rem; font-weight: 900; letter-spacing: -0.05em; color: var(--text); margin-bottom: 0.5rem; line-height: 1; }
+    .roi-card p { font-size: 0.85rem; color: var(--muted); }
+    @media (max-width: 900px) { .roi-container { grid-template-columns: 1fr; padding: 2rem; gap: 2.5rem; } }
+
   </style>
 </head>
 <body>
@@ -550,6 +603,49 @@
 
 <div class="divider"></div>
 
+<!-- ROI CALCULATOR -->
+<section id="roi-calculator">
+  <div class="section-header reveal">
+    <div class="section-label">Interactive ROI</div>
+    <h2>Calculate your <span class="gradient-text">silent losses.</span></h2>
+    <p class="section-sub">See how much manual processes are costing you every month, and what automation can recover.</p>
+  </div>
+  
+  <div class="roi-container reveal reveal-delay-1">
+    <div class="roi-inputs">
+      <div class="roi-group">
+        <label for="leadsCount">Monthly Leads / Inquiries</label>
+        <input type="range" id="leadsCount" min="50" max="5000" step="50" value="500" />
+        <div class="roi-val"><span id="leadsVal">500</span> / month</div>
+      </div>
+      <div class="roi-group">
+        <label for="timePerLead">Time spent per lead (minutes)</label>
+        <input type="range" id="timePerLead" min="5" max="60" step="5" value="15" />
+        <div class="roi-val"><span id="timeVal">15</span> mins</div>
+      </div>
+      <div class="roi-group">
+        <label for="hourlyRate">Avg. Hourly Rate of Staff ($)</label>
+        <input type="range" id="hourlyRate" min="15" max="150" step="5" value="30" />
+        <div class="roi-val">$<span id="rateVal">30</span> / hr</div>
+      </div>
+    </div>
+    <div class="roi-results">
+      <div class="roi-card">
+        <h4>Current Manual Cost</h4>
+        <div class="roi-price" id="costVal">$3,750</div>
+        <p>per month spent on repetitive tasks.</p>
+      </div>
+      <div class="roi-card highlight">
+        <h4>AI Automation Savings</h4>
+        <div class="roi-price gradient-text" id="savingsVal">$3,000</div>
+        <p>recovered every month (assuming 80% automation).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- TESTIMONIALS -->
 <section id="testimonials">
   <div class="section-header reveal">
@@ -652,6 +748,39 @@
   </div>
 </footer>
 
+<!-- AI CHATBOT WIDGET -->
+<div class="chatbot-widget">
+  <div class="chatbot-window" id="chatbotWindow">
+    <div class="chatbot-header">
+      <div class="chatbot-h-info">
+        <div class="chatbot-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+        </div>
+        <div>
+          <div class="chatbot-title">Agent MAK</div>
+          <div class="chatbot-status">Online</div>
+        </div>
+      </div>
+      <button class="chatbot-close" id="chatbotClose" aria-label="Close Chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages">
+      <div class="msg msg-bot">Hi there! I'm Abdullah's AI qualification agent. I can answer questions about our systems or schedule a free 30-min audit for your business. How can I help you today?</div>
+    </div>
+    <div class="chatbot-input-area">
+      <input type="text" id="chatbotInput" class="chatbot-input" placeholder="Type your message..." autocomplete="off" />
+      <button id="chatbotSend" class="chatbot-send" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
+  </div>
+  <button class="chatbot-button" id="chatbotBtn" aria-label="Open Chat">
+    <div class="chatbot-badge">1</div>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  </button>
+</div>
+
 <script>
   // ── SCROLL REVEAL ──
   const revealObs = new IntersectionObserver(entries => {
@@ -736,6 +865,137 @@
     backTop.classList.toggle('visible', window.scrollY > 600);
   }, { passive: true });
   backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // ── AI CHATBOT LOGIC ──
+  const chatbotBtn = document.getElementById('chatbotBtn');
+  const chatbotWindow = document.getElementById('chatbotWindow');
+  const chatbotClose = document.getElementById('chatbotClose');
+  const chatbotMessages = document.getElementById('chatbotMessages');
+  const chatbotInput = document.getElementById('chatbotInput');
+  const chatbotSend = document.getElementById('chatbotSend');
+  const chatbotBadge = document.querySelector('.chatbot-badge');
+
+  // Toggle Chat
+  chatbotBtn.addEventListener('click', () => {
+    chatbotWindow.classList.add('open');
+    if(chatbotBadge) chatbotBadge.style.display = 'none'; // hide notification badge when opened
+    chatbotInput.focus();
+  });
+  
+  chatbotClose.addEventListener('click', () => {
+    chatbotWindow.classList.remove('open');
+  });
+
+  // Simple simulated conversation flow
+  const knowledgeBase = [
+    { keywords: ['price', 'pricing', 'cost', 'fee'], response: "My automation systems are custom built based on your specific requirements. We typically look at how much your current manual processes are costing you, and guarantee a rapid ROI. Check out the Pricing page for baseline packages, or book an audit so we can find exactly what you need." },
+    { keywords: ['book', 'audit', 'meeting', 'call', 'consultation'], response: "You can book your free 30-minute system architecture audit right here: <br><br><a href='https://cal.com/drabdullahautomation/30min' target='_blank' style='color:var(--accent2); font-weight: bold;'>📅 Book 30-Min Free Audit</a>" },
+    { keywords: ['n8n', 'platform', 'tool', 'stack'], response: "Abdullah builds entirely in n8n. It allows him to write custom code, build complex fall-back logic natively into the nodes, and handle heavy volume securely without Zapier's costly markup." },
+    { keywords: ['fail', 'break', 'error'], response: "Unlike standard Zaps, the systems Abdullah builds enforce strict decision logic and ship with a 'kill switch'—meaning if data is missing or the AI gets confused, the system safely escalates to a human instead of messing up silently." },
+    { keywords: ['whatsapp', 'wa', 'message'], response: "Yes! Abdullah builds robust WhatsApp automation capable of deep qualification, scheduling, and live database lookups. Try DMing him 'AUTOMATE' on LinkedIn or directly on WhatsApp." }
+  ];
+
+  function scrollToBottom() {
+    chatbotMessages.scrollTo(0, chatbotMessages.scrollHeight);
+  }
+
+  function renderTypingIndicator() {
+    const typingMsg = document.createElement('div');
+    typingMsg.className = 'msg-typing';
+    typingMsg.id = 'typingIndicator';
+    typingMsg.innerHTML = '<div class="dot-typing"></div><div class="dot-typing"></div><div class="dot-typing"></div>';
+    chatbotMessages.appendChild(typingMsg);
+    scrollToBottom();
+  }
+
+  function removeTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) typingIndicator.remove();
+  }
+
+  function appendMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `msg msg-${sender}`;
+    msgDiv.innerHTML = text; // allow basic HTML like breaks/links
+    chatbotMessages.appendChild(msgDiv);
+    scrollToBottom();
+  }
+
+  function handleSend() {
+    const text = chatbotInput.value.trim();
+    if (!text) return;
+    
+    // User message
+    appendMessage(text, 'user');
+    chatbotInput.value = '';
+
+    // Bot response logic
+    renderTypingIndicator();
+    
+    // Determine response delay to mimic reading
+    const delay = Math.min(1000 + text.length * 20, 2500);
+    
+    setTimeout(() => {
+      removeTypingIndicator();
+      const lowerText = text.toLowerCase();
+      
+      // Look for keyword match
+      let reply = "That's an interesting question. The best way to map out exactly how we'd solve that is to hop on a quick call and analyze your current workflow. <br><br><a href='https://cal.com/drabdullahautomation/30min' target='_blank' style='color:var(--accent2); font-weight: bold;'>📅 Book 30-Min Audit</a>";
+      
+      for (const item of knowledgeBase) {
+        if (item.keywords.some(kw => lowerText.includes(kw))) {
+          reply = item.response;
+          break;
+        }
+      }
+      
+      appendMessage(reply, 'bot');
+    }, delay);
+  }
+
+  chatbotSend.addEventListener('click', handleSend);
+  chatbotInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSend();
+  });
+
+  // ── ROI CALCULATOR LOGIC ──
+  const leadsCount = document.getElementById('leadsCount');
+  const timePerLead = document.getElementById('timePerLead');
+  const hourlyRate = document.getElementById('hourlyRate');
+  
+  const leadsVal = document.getElementById('leadsVal');
+  const timeVal = document.getElementById('timeVal');
+  const rateVal = document.getElementById('rateVal');
+  
+  const costVal = document.getElementById('costVal');
+  const savingsVal = document.getElementById('savingsVal');
+
+  function calculateROI() {
+    const leads = parseInt(leadsCount.value);
+    const time = parseInt(timePerLead.value); // in mins
+    const rate = parseInt(hourlyRate.value); // in $/hr
+    
+    leadsVal.textContent = leads.toLocaleString();
+    timeVal.textContent = time;
+    rateVal.textContent = rate;
+    
+    // Monthly manual cost
+    const hoursSpent = (leads * time) / 60;
+    const monthlyCost = hoursSpent * rate;
+    
+    // Expected savings (80% automation)
+    const monthlySavings = monthlyCost * 0.8;
+    
+    costVal.textContent = '$' + Math.round(monthlyCost).toLocaleString();
+    savingsVal.textContent = '$' + Math.round(monthlySavings).toLocaleString();
+  }
+
+  if (leadsCount && timePerLead && hourlyRate) {
+    [leadsCount, timePerLead, hourlyRate].forEach(input => {
+      input.addEventListener('input', calculateROI);
+    });
+    calculateROI(); // init
+  }
 </script>
 </body>
 </html>
