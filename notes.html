@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build Notes — Muhammad Abdullah Khan · AI Automation Builder</title>
+  <meta name="description" content="Behind-the-scenes breakdowns of AI automation systems built by Muhammad Abdullah Khan. Architecture decisions, failure states, and real outcomes." />
+  <meta property="og:title" content="Build Notes — Muhammad Abdullah Khan · AI Automation Builder" />
+  <meta property="og:description" content="Behind-the-scenes breakdowns of real AI automation systems. Architecture decisions, failure states, real outcomes." />
+  <meta property="og:image" content="https://portfolios-eight-puce.vercel.app/Portfolio/files/Dark_tech_banner_202604121155.jpeg" />
+  <meta property="og:url" content="https://portfolios-eight-puce.vercel.app/notes.html" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://portfolios-eight-puce.vercel.app/Portfolio/files/Dark_tech_banner_202604121155.jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#05050d; --bg2:#0d0d18; --bg3:#151520;
+      --accent:#7c6fff; --accent2:#b39dff; --accent3:#e879f9;
+      --text:#eeeeff; --muted:#777799; --border:#1e1e30; --nav-h:60px;
+    }
+    html { scroll-behavior: smooth; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.6; overflow-x:hidden; }
+    body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:1000; opacity:.35; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); }
+    .bg-glow { position:fixed; pointer-events:none; z-index:0; border-radius:50%; }
+    .bg-glow-1 { width:700px; height:700px; background:radial-gradient(circle,rgba(124,111,255,.12) 0%,transparent 70%); top:-150px; left:-200px; animation:drift 12s ease-in-out infinite alternate; }
+    .bg-glow-2 { width:500px; height:500px; background:radial-gradient(circle,rgba(232,121,249,.08) 0%,transparent 70%); top:40vh; right:-100px; animation:drift 16s ease-in-out infinite alternate-reverse; }
+    @keyframes drift { from{transform:translate(0,0) scale(1);} to{transform:translate(40px,30px) scale(1.06);} }
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity:1; transform:none; }
+    .reveal-delay-1{transition-delay:.1s;} .reveal-delay-2{transition-delay:.2s;} .reveal-delay-3{transition-delay:.3s;}
+    .reveal-delay-4{transition-delay:.4s;} .reveal-delay-5{transition-delay:.5s;} .reveal-delay-6{transition-delay:.6s;}
+
+    /* NAV */
+    nav { position:fixed; top:0; width:100%; z-index:200; background:rgba(5,5,13,.8); backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; justify-content:space-between; align-items:center; height:var(--nav-h); transition:background .3s; }
+    .nav-logo { font-weight:800; font-size:1rem; letter-spacing:.05em; background:linear-gradient(135deg,var(--accent2),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; }
+    .nav-links { display:flex; gap:1.5rem; list-style:none; align-items:center; }
+    .nav-links a { color:var(--muted); text-decoration:none; font-size:.875rem; font-weight:500; transition:color .2s; position:relative; padding-bottom:2px; }
+    .nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; background:var(--accent2); transition:width .3s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--text); }
+    .nav-links a.active::after, .nav-links a:hover::after { width:100%; }
+    .nav-divider { width:1px; height:16px; background:var(--border); }
+    .nav-links a.nav-cta { background:linear-gradient(135deg,var(--accent),#9c7fff); -webkit-background-clip:unset; -webkit-text-fill-color:unset; color:#fff; padding:.35rem .9rem; border-radius:8px; font-size:.8rem; }
+    .nav-links a.nav-cta:hover { opacity:.85; }
+    .nav-links a.nav-cta::after { display:none; }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; background:none; border:none; }
+    .hamburger span { display:block; width:22px; height:2px; background:var(--muted); border-radius:2px; transition:all .3s; }
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);} .hamburger.open span:nth-child(2){opacity:0;} .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+    .mobile-menu { position:fixed; top:var(--nav-h); left:0; right:0; z-index:199; background:rgba(5,5,13,.97); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:0 2rem; max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.16,1,.3,1), padding .4s; display:flex; flex-direction:column; }
+    .mobile-menu.open { max-height:500px; padding:1.5rem 2rem; gap:1.25rem; }
+    .mobile-menu a { color:var(--muted); text-decoration:none; font-size:1rem; font-weight:500; transition:color .2s; }
+    .mobile-menu a:hover { color:var(--text); }
+    .mobile-divider { height:1px; background:var(--border); }
+
+    /* BACK TO TOP */
+    .back-top { position:fixed; bottom:2rem; right:2rem; z-index:100; width:40px; height:40px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted); transition:all .3s; opacity:0; pointer-events:none; }
+    .back-top.visible { opacity:1; pointer-events:auto; }
+    .back-top:hover { color:var(--text); border-color:var(--accent); }
+
+    /* HERO */
+    section { padding:100px 2rem 60px; max-width:860px; margin:0 auto; position:relative; z-index:1; }
+    .hero-label { display:inline-flex; align-items:center; gap:.5rem; font-size:.75rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); border:1px solid var(--border); border-radius:100px; padding:.3rem .9rem; margin-bottom:1.5rem; }
+    .dot { width:6px; height:6px; border-radius:50%; background:var(--accent2); display:inline-block; animation:pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(.8);} }
+    h1 { font-size:clamp(2rem,5vw,3rem); font-weight:900; line-height:1.1; letter-spacing:-.03em; margin-bottom:1rem; }
+    .gradient-text { background:linear-gradient(135deg,var(--accent2) 0%,var(--accent3) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-sub { color:var(--muted); font-size:1.05rem; max-width:560px; line-height:1.7; margin-bottom:2rem; }
+    .section-label { font-size:.7rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--accent2); margin-bottom:.75rem; }
+    .divider { height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:0 2rem; }
+
+    /* POST LIST */
+    .posts-section { padding:60px 2rem 80px; max-width:860px; margin:0 auto; position:relative; z-index:1; }
+    .post-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:2rem; margin-bottom:1.5rem; text-decoration:none; display:block; transition:border-color .3s, transform .3s; }
+    .post-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+    .post-meta { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; flex-wrap:wrap; }
+    .post-tag { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--accent2); background:rgba(124,111,255,.1); border:1px solid rgba(124,111,255,.2); border-radius:100px; padding:.2rem .6rem; }
+    .post-date { font-size:.8rem; color:var(--muted); }
+    .post-card h2 { font-size:1.25rem; font-weight:700; color:var(--text); margin-bottom:.6rem; line-height:1.3; }
+    .post-card p { color:var(--muted); font-size:.95rem; line-height:1.6; }
+    .post-read { font-size:.85rem; font-weight:600; color:var(--accent2); margin-top:1rem; display:inline-block; }
+
+    /* ARTICLE */
+    .article-section { padding:60px 2rem 80px; max-width:740px; margin:0 auto; position:relative; z-index:1; }
+    .article-section h2 { font-size:1.5rem; font-weight:800; margin:2.5rem 0 1rem; line-height:1.3; }
+    .article-section h3 { font-size:1.1rem; font-weight:700; margin:2rem 0 .75rem; color:var(--accent2); }
+    .article-section p { color:rgba(238,238,255,.85); line-height:1.8; margin-bottom:1.2rem; font-size:1rem; }
+    .article-section ul { margin:0 0 1.2rem 1.2rem; }
+    .article-section li { color:rgba(238,238,255,.8); line-height:1.8; margin-bottom:.5rem; font-size:1rem; }
+    .article-section strong { color:var(--text); }
+    .article-section a { color:var(--accent2); text-decoration:none; border-bottom:1px solid rgba(179,157,255,.3); }
+    .article-section a:hover { border-color:var(--accent2); }
+    .article-hero-img { width:100%; border-radius:12px; border:1px solid var(--border); margin:1.5rem 0 2rem; }
+    .callout { background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 12px 12px 0; padding:1.25rem 1.5rem; margin:1.5rem 0; }
+    .callout p { margin:0; color:rgba(238,238,255,.9); font-size:.95rem; }
+    .arch-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0; }
+    .arch-item { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:1.25rem; }
+    .arch-item-title { font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent2); margin-bottom:.5rem; }
+    .arch-item p { margin:0; font-size:.9rem; color:var(--muted); }
+    .article-cta { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:2rem; text-align:center; margin-top:3rem; }
+    .article-cta h3 { font-size:1.2rem; font-weight:800; margin-bottom:.75rem; }
+    .article-cta p { color:var(--muted); margin-bottom:1.5rem; font-size:.95rem; }
+    .btn { display:inline-flex; align-items:center; gap:.5rem; background:linear-gradient(135deg,var(--accent),#9c7fff); color:#fff; text-decoration:none; padding:.7rem 1.5rem; border-radius:10px; font-size:.9rem; font-weight:600; transition:opacity .2s, transform .2s; }
+    .btn:hover { opacity:.9; transform:translateY(-1px); }
+
+    footer { text-align:center; padding:2rem; border-top:1px solid var(--border); color:var(--muted); font-size:.8rem; display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+    footer a { color:var(--muted); text-decoration:none; transition:color .2s; }
+    footer a:hover { color:var(--text); }
+
+    @media (max-width:768px) {
+      section, .posts-section, .article-section { padding:80px 1.25rem 50px; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .arch-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<button class="back-top" id="backTop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4 7l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">MAK</a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="index.html#system">Featured</a></li>
+    <li><span class="nav-divider"></span></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="notes.html" class="active">Notes</a></li>
+    <li><span class="nav-divider"></span></li>
+    <li><a href="https://cal.com/drabdullahautomation/30min" class="nav-cta" target="_blank" rel="noopener">Book Audit</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" class="mobile-link">Home</a>
+  <a href="index.html#about" class="mobile-link">About</a>
+  <a href="index.html#services" class="mobile-link">Services</a>
+  <div class="mobile-divider"></div>
+  <a href="pricing.html" class="mobile-link">Pricing</a>
+  <a href="faq.html" class="mobile-link">FAQ</a>
+  <a href="notes.html" class="mobile-link">Notes</a>
+  <div class="mobile-divider"></div>
+  <a href="https://cal.com/drabdullahautomation/30min" class="mobile-link" style="color:var(--accent2);font-weight:600;">Book Free Audit →</a>
+</div>
+
+<!-- HERO -->
+<section id="top">
+  <div class="hero-label reveal"><span class="dot"></span>Build Notes</div>
+  <h1 class="reveal reveal-delay-1">How the systems<br /><span class="gradient-text">actually get built.</span></h1>
+  <p class="hero-sub reveal reveal-delay-2">Architecture breakdowns, decisions I almost got wrong, and what the happy path misses. One post per project.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- POST LIST -->
+<div class="posts-section">
+
+  <a href="#omni-channel" class="post-card reveal reveal-delay-1">
+    <div class="post-meta">
+      <span class="post-tag">Case Study</span>
+      <span class="post-tag">n8n · Voice AI · WhatsApp</span>
+      <span class="post-date">April 2026</span>
+    </div>
+    <h2>How I built the Omni-Channel Master Controller</h2>
+    <p>One AI brain handling voice calls and WhatsApp simultaneously. The problem wasn't making it work. It was making it impossible to break.</p>
+    <span class="post-read">Read the breakdown →</span>
+  </a>
+
+  <div class="post-card reveal reveal-delay-2" style="opacity:.5;cursor:default;pointer-events:none;">
+    <div class="post-meta">
+      <span class="post-tag">Coming Soon</span>
+      <span class="post-date">May 2026</span>
+    </div>
+    <h2>Building a RAG system that knows when to shut up</h2>
+    <p>Confidence scoring, escalation protocols, and why "I don't know" is the most important thing an AI can say.</p>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ARTICLE: OMNI-CHANNEL -->
+<article class="article-section" id="omni-channel">
+
+  <div class="post-meta reveal" style="margin-bottom:1.5rem">
+    <span class="post-tag">Case Study</span>
+    <span class="post-tag">n8n · Voice AI · WhatsApp</span>
+    <span class="post-date">April 2026</span>
+  </div>
+
+  <h1 class="reveal reveal-delay-1" style="font-size:clamp(1.6rem,4vw,2.2rem);font-weight:900;line-height:1.15;letter-spacing:-.03em;margin-bottom:1rem;">How I built the Omni-Channel Master Controller</h1>
+  <p class="reveal reveal-delay-2" style="color:var(--muted);font-size:1.05rem;line-height:1.7;margin-bottom:2rem;">One AI brain. Two channels. A booking system that cannot double-book, cannot guess, and cannot fail silently at 2am.</p>
+
+  <img src="Portfolio/files/AI_system_architecture_202604121156.jpeg" alt="Omni-Channel Master Controller architecture diagram" class="article-hero-img reveal reveal-delay-3" />
+
+  <h2 class="reveal">The problem</h2>
+  <p class="reveal">The client was running a service business. They had a WhatsApp number that got 30-40 messages a day. They also had a phone number that rang for bookings. Two separate people were handling them. Double-bookings happened twice a week. The team spent two hours a day copying information between systems.</p>
+  <p class="reveal">The obvious answer was two bots. One for WhatsApp, one for calls. Most builders would have stopped there.</p>
+  <p class="reveal">The problem with two separate bots is that they share a calendar but they don't share a brain. Bot A confirms a slot. Bot B is three seconds into confirming the same slot. Neither knows the other exists. You now have a ghost booking and an angry client.</p>
+
+  <h2 class="reveal">The architecture decision that changed everything</h2>
+  <p class="reveal">One decision engine. Both channels feed into it before anything is confirmed. I called it the Intent Switch.</p>
+
+  <div class="arch-grid reveal">
+    <div class="arch-item">
+      <div class="arch-item-title">Intent Switch</div>
+      <p>Every incoming message, voice or text, routes through here first. It classifies intent before any action is taken. Nothing happens until it decides.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-item-title">Calendar Defender</div>
+      <p>Slots are staged, not confirmed. A booking only locks when the human explicitly confirms. The AI reads back the time and waits for a yes.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-item-title">Liability Shield</div>
+      <p>Confidence scoring on every AI response. Below the threshold, the system stops answering and fires a Slack alert to a human. No guessing, ever.</p>
+    </div>
+    <div class="arch-item">
+      <div class="arch-item-title">Audit Trail</div>
+      <p>Every action, every decision, every message gets logged with a timestamp and the reason. When something looks wrong, you can trace exactly what happened.</p>
+    </div>
+  </div>
+
+  <h2 class="reveal">What I mapped before writing a single node</h2>
+  <p class="reveal">The failure states, not the happy path. Here's what I documented before touching n8n:</p>
+  <ul class="reveal">
+    <li>What happens if the AI returns a time slot that doesn't exist in Cal.com</li>
+    <li>What happens if the caller hangs up mid-booking before confirming</li>
+    <li>What happens if two bookings arrive within three seconds of each other</li>
+    <li>What happens if the WhatsApp message contains no readable intent at all</li>
+    <li>What happens if ElevenLabs goes down mid-call</li>
+    <li>What happens if the calendar API times out</li>
+  </ul>
+  <p class="reveal">Each of those has an explicit handler. Not a fallback that apologises and retries. A handler that logs, alerts, and fails safely without affecting the user experience.</p>
+
+  <div class="callout reveal">
+    <p>The Calendar Defender pattern alone eliminated double-bookings completely. No slot is ever confirmed without an explicit human approval message. The AI stages the booking, reads it back word for word, and waits. Two bookings arriving in the same second both stage. Only the first one to receive an explicit "yes" locks the calendar.</p>
+  </div>
+
+  <h2 class="reveal">The stack</h2>
+  <ul class="reveal">
+    <li><strong>n8n</strong> for orchestration. Every decision point is a visible node. The client can see exactly what the system is doing.</li>
+    <li><strong>ElevenLabs + Twilio</strong> for voice. Natural speech, low latency, phone-number integration that works from day one.</li>
+    <li><strong>WhatsApp Cloud API</strong> for messaging. Verified business number, no third-party bridge.</li>
+    <li><strong>Cal.com API</strong> for booking. Staging and confirming slots programmatically, with conflict detection.</li>
+    <li><strong>Slack</strong> for human escalation alerts. When the AI can't handle something, a Slack message fires in under two seconds with the full context.</li>
+    <li><strong>OpenAI</strong> for intent classification. Small, fast model. Doesn't need to be GPT-4 for this job.</li>
+  </ul>
+
+  <h2 class="reveal">What I would do differently</h2>
+  <p class="reveal">The voice side took longer than expected because of latency. ElevenLabs response time plus Twilio processing plus the n8n webhook adds up. First version had a half-second delay that felt wrong in a live call. I fixed it by pre-generating the most common response phrases and caching them. Response time dropped to under 200ms for the predictable paths.</p>
+  <p class="reveal">I'd also start with a smaller confidence threshold and tune it up. Starting too conservative means the AI hands off to a human too often. Better to collect data on where it struggles first, then tighten the threshold once you know the real edge cases.</p>
+
+  <h2 class="reveal">The outcome</h2>
+  <p class="reveal">Zero double-bookings since launch. The team went from two hours of inbox management a day to checking a Slack channel for escalations. That channel averages four messages a week.</p>
+
+  <div class="article-cta reveal">
+    <h3>Want a system like this for your business?</h3>
+    <p>Book a free 30-minute audit. I'll map your specific workflow and tell you honestly whether this is the right fix.</p>
+    <a href="https://cal.com/drabdullahautomation/30min" class="btn" target="_blank" rel="noopener">Book Free Audit →</a>
+  </div>
+
+</article>
+
+<footer>
+  <span>Muhammad Abdullah Khan</span><span>·</span>
+  <span>AI Automation Builder</span><span>·</span>
+  <span>Faisalabad, Pakistan</span><span>·</span>
+  <a href="index.html">Home</a><span>·</span>
+  <a href="pricing.html">Pricing</a><span>·</span>
+  <a href="faq.html">FAQ</a><span>·</span>
+  <a href="https://www.linkedin.com/in/drabdullahautomation" target="_blank" rel="noopener">LinkedIn</a><span>·</span>
+  <a href="https://wa.me/92326281281" target="_blank" rel="noopener">WhatsApp</a>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible'); }), {threshold:.1, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  window.addEventListener('load', () => document.querySelectorAll('#top .reveal').forEach(el => el.classList.add('visible')));
+
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
+  document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }));
+  window.addEventListener('scroll', () => { document.getElementById('navbar').style.background = window.scrollY > 20 ? 'rgba(5,5,13,.95)' : 'rgba(5,5,13,.8)'; }, {passive:true});
+
+  const bt = document.getElementById('backTop');
+  window.addEventListener('scroll', () => bt.classList.toggle('visible', window.scrollY > 600), {passive:true});
+  bt.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+</script>
+</body>
+</html>
