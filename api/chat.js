@@ -85,9 +85,10 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    console.error('OPENAI_API_KEY not set');
-    return res.status(500).json({ error: 'Server configuration error.' });
+    return res.status(500).json({ error: 'ENV_MISSING: OPENAI_API_KEY not set in Vercel' });
   }
+  // Debug: confirm key prefix (safe — never logs full key)
+  console.log('Key prefix:', apiKey.slice(0, 10));
 
   try {
     const { status, body } = await openaiRequest(apiKey, messages);
