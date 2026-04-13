@@ -382,7 +382,7 @@
       </div>
       <div class="form-success" id="formSuccess">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4 4 8-8" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Opening WhatsApp with your message. I'll reply within 24 hours.
+        Message sent. I'll reply within 24 hours.
       </div>
     </form>
   </div>
@@ -537,6 +537,7 @@
       if (data.success) {
         form.reset();
         document.getElementById('formSuccess').classList.add('show');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message →'; }
       } else {
         throw new Error(data.message || 'Submission failed');
       }
