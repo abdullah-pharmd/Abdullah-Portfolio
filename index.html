@@ -22,7 +22,7 @@
     @page { margin: 1.5cm; }
     body { background: #fff !important; color: #111 !important; font-size: 11pt; }
     nav, .mobile-menu, .chatbot-widget, .back-top, .sticky-bar, .read-progress,
-    .bg-glow, .hero-video-bg, .scroll-indicator, .tools-strip, .lightbox,
+    .bg-glow, .hero-video-bg, .scroll-indicator, .outcome-strip, .lightbox,
     .hero-ctas .btn-wa, .hero-ctas .btn-outline, footer .footer-socials { display: none !important; }
     h1, h2, h3 { color: #111 !important; page-break-after: avoid; }
     section { padding: 1.5cm 0 !important; max-width: 100% !important; page-break-inside: avoid; }
@@ -84,7 +84,6 @@
     html[data-theme="light"] nav, html[data-theme="light"] .mobile-menu { background: rgba(250,250,250,.85); }
     html[data-theme="light"] nav.scrolled { background: rgba(250,250,250,.97) !important; }
     html[data-theme="light"] .hero-video-bg::after { background: linear-gradient(to bottom, rgba(250,250,250,.3) 0%, rgba(250,250,250,.1) 40%, rgba(250,250,250,.85) 85%, var(--bg) 100%); }
-    html[data-theme="light"] .tools-strip-video video { filter: invert(1) hue-rotate(180deg); opacity: 0.04; }
     html[data-theme="light"] .about-text { background-blend-mode: overlay; background-color: rgba(255,255,255,0.9); }
     html[data-theme="light"] .contact-bg { filter: invert(1); opacity: 0.04; }
     html[data-theme="light"] .process-bg { filter: invert(1); opacity: 0.03; }
@@ -197,17 +196,25 @@
     .section-sub { color: var(--muted); margin-top: .75rem; max-width: 520px; font-size: 1rem; }
     .divider { max-width: 1100px; margin: 0 auto; height: 1px; background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent); }
 
-    /* ── TOOLS STRIP ── */
-    .tools-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg2); overflow: hidden; position: relative; z-index: 1; }
-    .tools-strip-video { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-    .tools-strip-video video { width: 100%; height: 100%; object-fit: cover; opacity: .07; filter: saturate(1.8); }
-    .tools-strip-inner { position: relative; z-index: 1; }
-    .tools-strip-inner { display: flex; align-items: center; gap: 0; padding: 1.25rem 0; white-space: nowrap; animation: marquee 28s linear infinite; }
-    .tools-strip:hover .tools-strip-inner { animation-play-state: paused; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .tool-item { display: inline-flex; align-items: center; gap: .6rem; padding: 0 2.5rem; color: var(--muted); font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; flex-shrink: 0; transition: color .2s; }
-    .tool-item:hover { color: var(--accent2); }
-    .tool-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+    /* ── OUTCOME STRIP ── */
+    .outcome-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg2); overflow: hidden; position: relative; z-index: 1; padding: .9rem 0; display: flex; flex-direction: column; gap: .6rem; }
+    .outcome-strip::before, .outcome-strip::after { content: ''; position: absolute; top: 0; bottom: 0; width: 100px; z-index: 2; pointer-events: none; }
+    .outcome-strip::before { left: 0; background: linear-gradient(to right, var(--bg2), transparent); }
+    .outcome-strip::after { right: 0; background: linear-gradient(to left, var(--bg2), transparent); }
+    .outcome-row { display: flex; align-items: center; gap: .75rem; white-space: nowrap; }
+    .outcome-row-1 { animation: marquee-fwd 35s linear infinite; }
+    .outcome-row-2 { animation: marquee-rev 40s linear infinite; }
+    .outcome-strip:hover .outcome-row { animation-play-state: paused; }
+    @keyframes marquee-fwd { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes marquee-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+    .outcome-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .35rem 1rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg3); color: var(--muted); font-size: .78rem; font-weight: 500; flex-shrink: 0; transition: border-color .2s, color .2s; cursor: default; }
+    .outcome-pill:hover { border-color: rgba(124,111,255,.4); color: var(--text); }
+    .outcome-pill .op-icon { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .op-green { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.6); }
+    .op-purple { background: var(--accent2); box-shadow: 0 0 6px rgba(179,157,255,.5); }
+    .op-pink { background: var(--accent3); box-shadow: 0 0 6px rgba(232,121,249,.4); }
+    html[data-theme="light"] .outcome-strip::before { background: linear-gradient(to right, #ffffff, transparent); }
+    html[data-theme="light"] .outcome-strip::after { background: linear-gradient(to left, #ffffff, transparent); }
 
     /* ── ABOUT ── */
     .about-grid { display: grid; grid-template-columns: 240px 1fr 1fr; gap: 3rem; align-items: start; }
@@ -581,31 +588,47 @@
   </section>
 </div>
 
-<!-- TOOLS STRIP -->
-<div class="tools-strip">
-  <div class="tools-strip-video"></div>
-  <div class="tools-strip-inner">
-    <span class="tool-item">n8n</span><span class="tool-dot"></span>
-    <span class="tool-item">OpenAI</span><span class="tool-dot"></span>
-    <span class="tool-item">Claude API</span><span class="tool-dot"></span>
-    <span class="tool-item">Twilio</span><span class="tool-dot"></span>
-    <span class="tool-item">WhatsApp Cloud API</span><span class="tool-dot"></span>
-    <span class="tool-item">Pinecone</span><span class="tool-dot"></span>
-    <span class="tool-item">Supabase</span><span class="tool-dot"></span>
-    <span class="tool-item">Cal.com</span><span class="tool-dot"></span>
-    <span class="tool-item">Slack API</span><span class="tool-dot"></span>
-    <span class="tool-item">ElevenLabs</span><span class="tool-dot"></span>
-    <!-- duplicate for seamless loop -->
-    <span class="tool-item">n8n</span><span class="tool-dot"></span>
-    <span class="tool-item">OpenAI</span><span class="tool-dot"></span>
-    <span class="tool-item">Claude API</span><span class="tool-dot"></span>
-    <span class="tool-item">Twilio</span><span class="tool-dot"></span>
-    <span class="tool-item">WhatsApp Cloud API</span><span class="tool-dot"></span>
-    <span class="tool-item">Pinecone</span><span class="tool-dot"></span>
-    <span class="tool-item">Supabase</span><span class="tool-dot"></span>
-    <span class="tool-item">Cal.com</span><span class="tool-dot"></span>
-    <span class="tool-item">Slack API</span><span class="tool-dot"></span>
-    <span class="tool-item">ElevenLabs</span><span class="tool-dot"></span>
+<!-- OUTCOME STRIP -->
+<div class="outcome-strip" aria-hidden="true">
+  <!-- Row 1: forward -->
+  <div class="outcome-row outcome-row-1">
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Lead replied in under 60 seconds</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>No more manually sorting your inbox</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Bookings that happen while you sleep</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>AI that knows when to stop and escalate</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Every interaction logged automatically</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Follow-ups that never fall through</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>One system. Every channel.</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Your SOP turned into a live AI agent</span>
+    <!-- duplicate -->
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Lead replied in under 60 seconds</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>No more manually sorting your inbox</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Bookings that happen while you sleep</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>AI that knows when to stop and escalate</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Every interaction logged automatically</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Follow-ups that never fall through</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>One system. Every channel.</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Your SOP turned into a live AI agent</span>
+  </div>
+  <!-- Row 2: reverse -->
+  <div class="outcome-row outcome-row-2">
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>Stop hiring to handle volume</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Qualify leads before a human sees them</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Voice agent answers calls 24/7</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>No silent failures at 2am</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>Full ownership — you keep everything</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Fixed price agreed before work starts</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>WhatsApp intake on autopilot</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>Documents answered in seconds, not days</span>
+    <!-- duplicate -->
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>Stop hiring to handle volume</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>Qualify leads before a human sees them</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Voice agent answers calls 24/7</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>No silent failures at 2am</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>Full ownership — you keep everything</span>
+    <span class="outcome-pill"><span class="op-icon op-purple"></span>Fixed price agreed before work starts</span>
+    <span class="outcome-pill"><span class="op-icon op-green"></span>WhatsApp intake on autopilot</span>
+    <span class="outcome-pill"><span class="op-icon op-pink"></span>Documents answered in seconds, not days</span>
   </div>
 </div>
 
